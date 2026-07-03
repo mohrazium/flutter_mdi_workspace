@@ -22,6 +22,14 @@ enum ResizeDirection {
 class MdiWorkspaceController extends ChangeNotifier {
   final Map<String, WindowInstance> _windows = {};
   int _nextZIndex = 1;
+  double _workspaceWidth = 800;
+  double _workspaceHeight = 600;
+
+  /// Set workspace dimensions (call this when workspace size changes)
+  void setWorkspaceDimensions(double width, double height) {
+    _workspaceWidth = width;
+    _workspaceHeight = height;
+  }
 
   /// Get all open windows.
   List<WindowInstance> get windows => _windows.values.toList();
@@ -148,13 +156,19 @@ class MdiWorkspaceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Maximize a window.
+  /// Maximize a window (floating - fills workspace but stays in stack).
   void maximizeWindow(String windowId) {
     final window = _windows[windowId];
     if (window == null) return;
 
-    _windows[windowId] = window.copyWith(
+    // Save current geometry before maximizing
+    final savedWindow = window.withSavedGeometry();
+    _windows[windowId] = savedWindow.copyWith(
       visualState: WindowVisualState.maximized,
+      x: 0,
+      y: 0,
+      width: _workspaceWidth,
+      height: _workspaceHeight,
     );
     notifyListeners();
   }
@@ -164,7 +178,9 @@ class MdiWorkspaceController extends ChangeNotifier {
     final window = _windows[windowId];
     if (window == null) return;
 
-    _windows[windowId] = window.copyWith(
+    // Restore previous geometry if available
+    final restoredWindow = window.restorePreviousGeometry();
+    _windows[windowId] = restoredWindow.copyWith(
       visualState: WindowVisualState.normal,
     );
     notifyListeners();
