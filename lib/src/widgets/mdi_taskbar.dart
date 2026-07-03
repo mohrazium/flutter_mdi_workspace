@@ -63,9 +63,10 @@ class _MdiTaskbarState extends State<MdiTaskbar> {
   @override
   Widget build(BuildContext context) {
     final windows = _controller.windows;
+    final taskbarHeight = widget.height ?? widget.theme.taskbarButtonHeight;
 
     return Container(
-      height: widget.height ?? widget.theme.taskbarButtonHeight,
+      height: taskbarHeight,
       decoration: BoxDecoration(
         color: widget.theme.taskbarBackgroundColor,
         border: Border(
@@ -75,13 +76,15 @@ class _MdiTaskbarState extends State<MdiTaskbar> {
           ),
         ),
       ),
-      child: ListView.builder(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        itemCount: windows.length,
-        itemBuilder: (context, index) {
-          final window = windows[index];
-          return _buildTaskbarButton(window);
-        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < windows.length; i++)
+              _buildTaskbarButton(windows[i]),
+          ],
+        ),
       ),
     );
   }

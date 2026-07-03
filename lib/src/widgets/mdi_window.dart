@@ -48,6 +48,7 @@ class _MdiWindowState extends State<MdiWindow> {
   @override
   Widget build(BuildContext context) {
     final window = widget.window;
+    final resizeHandleWidth = widget.theme.resizeHandleWidth;
 
     return GestureDetector(
       onTap: () {
@@ -75,25 +76,209 @@ class _MdiWindowState extends State<MdiWindow> {
                   : null)
               : widget.theme.windowShadow,
         ),
-        child: Column(
+        child: Stack(
           children: [
-            // Title bar
-            MdiWindowTitleBar(
-              window: window,
-              controller: widget.controller,
-              theme: widget.theme,
-              onClosed: () {
-                widget.controller.closeWindow(window.id);
-                widget.onClosed?.call(window.id);
-              },
+            // Main window content
+            Column(
+              children: [
+                // Title bar
+                MdiWindowTitleBar(
+                  window: window,
+                  controller: widget.controller,
+                  theme: widget.theme,
+                  onClosed: () {
+                    widget.controller.closeWindow(window.id);
+                    widget.onClosed?.call(window.id);
+                  },
+                ),
+                // Content
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: widget.registry.build(context, window.target),
+                  ),
+                ),
+              ],
             ),
-            // Content
-            Expanded(
-              child: Container(
-                color: Colors.white,
-                child: widget.registry.build(context, window.target),
+            // Resize handles
+            if (window.canResize) ...[
+              // Top-left corner
+              Positioned(
+                left: 0,
+                top: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.topLeft,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth * 2,
+                      height: resizeHandleWidth * 2,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              // Top-right corner
+              Positioned(
+                right: 0,
+                top: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.topRight,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth * 2,
+                      height: resizeHandleWidth * 2,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom-left corner
+              Positioned(
+                left: 0,
+                bottom: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.bottomLeft,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth * 2,
+                      height: resizeHandleWidth * 2,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom-right corner
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.bottomRight,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth * 2,
+                      height: resizeHandleWidth * 2,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Top edge
+              Positioned(
+                left: resizeHandleWidth * 2,
+                right: resizeHandleWidth * 2,
+                top: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeRow,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.top,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      height: resizeHandleWidth,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom edge
+              Positioned(
+                left: resizeHandleWidth * 2,
+                right: resizeHandleWidth * 2,
+                bottom: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeRow,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.bottom,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      height: resizeHandleWidth,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Left edge
+              Positioned(
+                left: 0,
+                top: resizeHandleWidth * 2,
+                bottom: resizeHandleWidth * 2,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.left,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              // Right edge
+              Positioned(
+                right: 0,
+                top: resizeHandleWidth * 2,
+                bottom: resizeHandleWidth * 2,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      widget.controller.resizeWindowFromHandle(
+                        window.id,
+                        ResizeDirection.right,
+                        details.delta,
+                      );
+                    },
+                    child: Container(
+                      width: resizeHandleWidth,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

@@ -46,6 +46,9 @@ class WindowInstance {
   /// When the window was created.
   final DateTime createdAt;
 
+  /// Previous geometry before maximizing (for restore).
+  final _WindowGeometry? _previousGeometry;
+
   WindowInstance({
     required this.id,
     required this.target,
@@ -60,7 +63,10 @@ class WindowInstance {
     this.minHeight = 150,
     this.customTitle,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    _WindowGeometry? previousGeometry,
+  })
+      : _previousGeometry = previousGeometry,
+        createdAt = createdAt ?? DateTime.now();
 
   /// Get the display title for this window.
   String getTitle() => customTitle ?? target.type;
@@ -88,6 +94,7 @@ class WindowInstance {
     double? minHeight,
     String? customTitle,
     DateTime? createdAt,
+    _WindowGeometry? previousGeometry,
   }) {
     return WindowInstance(
       id: id ?? this.id,
@@ -103,6 +110,25 @@ class WindowInstance {
       minHeight: minHeight ?? this.minHeight,
       customTitle: customTitle ?? this.customTitle,
       createdAt: createdAt ?? this.createdAt,
+      previousGeometry: previousGeometry ?? _previousGeometry,
+    );
+  }
+
+  /// Save current geometry for restoration later.
+  WindowInstance withSavedGeometry() {
+    return copyWith(
+      previousGeometry: _WindowGeometry(x, y, width, height),
+    );
+  }
+
+  /// Restore to previously saved geometry.
+  WindowInstance restorePreviousGeometry() {
+    if (_previousGeometry == null) return this;
+    return copyWith(
+      x: _previousGeometry!.x,
+      y: _previousGeometry!.y,
+      width: _previousGeometry!.width,
+      height: _previousGeometry!.height,
     );
   }
 
@@ -144,4 +170,14 @@ class WindowInstance {
   String toString() =>
       'WindowInstance(id: $id, target: $target, visualState: $visualState, '
       'pos: ($x, $y), size: ${width}x$height, zIndex: $zIndex, active: $isActive)';
+}
+
+/// Internal class to store previous window geometry.
+class _WindowGeometry {
+  final double x;
+  final double y;
+  final double width;
+  final double height;
+
+  _WindowGeometry(this.x, this.y, this.width, this.height);
 }
