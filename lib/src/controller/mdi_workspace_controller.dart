@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import '../models/window_instance.dart';
 import '../models/window_visual_state.dart';
@@ -158,19 +156,13 @@ class MdiWorkspaceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Maximize a window (floating - fills workspace but stays in stack).
+  /// Maximize a window.
   void maximizeWindow(String windowId) {
     final window = _windows[windowId];
     if (window == null) return;
 
-    // Save current geometry before maximizing
-    final savedWindow = window.withSavedGeometry();
-    _windows[windowId] = savedWindow.copyWith(
+    _windows[windowId] = window.copyWith(
       visualState: WindowVisualState.maximized,
-      x: 0,
-      y: 0,
-      width: _workspaceWidth,
-      height: _workspaceHeight,
     );
     notifyListeners();
   }
@@ -180,9 +172,7 @@ class MdiWorkspaceController extends ChangeNotifier {
     final window = _windows[windowId];
     if (window == null) return;
 
-    // Restore previous geometry if available
-    final restoredWindow = window.restorePreviousGeometry();
-    _windows[windowId] = restoredWindow.copyWith(
+    _windows[windowId] = window.copyWith(
       visualState: WindowVisualState.normal,
     );
     notifyListeners();
@@ -193,9 +183,18 @@ class MdiWorkspaceController extends ChangeNotifier {
     final window = _windows[windowId];
     if (window == null || !window.canDrag) return;
 
+    // Calculate new position
+    double newX = window.x + delta.dx;
+    double newY = window.y + delta.dy;
+
+    // Clamp to workspace boundaries
+    // Keep at least 50 pixels of the title bar visible on the left/top
+    newX = newX.clamp(-window.width + 50, _workspaceWidth - 50);
+    newY = newY.clamp(0, _workspaceHeight - 30); // 30 is approximate title bar height
+
     _windows[windowId] = window.copyWith(
-      x: (window.x + delta.dx).clamp(0, double.infinity),
-      y: (window.y + delta.dy).clamp(0, double.infinity),
+      x: newX,
+      y: newY,
     );
     notifyListeners();
   }
@@ -255,9 +254,9 @@ class MdiWorkspaceController extends ChangeNotifier {
     newWidth = newWidth.clamp(window.minWidth, double.infinity);
     newHeight = newHeight.clamp(window.minHeight, double.infinity);
 
-    // Prevent negative positions
-    newX = newX.clamp(0, double.infinity);
-    newY = newY.clamp(0, double.infinity);
+    // Clamp position to keep window within bounds
+    newX = newX.clamp(0, _workspaceWidth - newWidth);
+    newY = newY.clamp(0, _workspaceHeight - newHeight);
 
     _windows[windowId] = window.copyWith(
       x: newX,
