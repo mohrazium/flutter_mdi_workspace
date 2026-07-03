@@ -22,12 +22,12 @@ class MdiWindowTitleBar extends StatefulWidget {
   final VoidCallback onClosed;
 
   const MdiWindowTitleBar({
-    super.key,
+    Key? key,
     required this.window,
     required this.controller,
     required this.theme,
     required this.onClosed,
-  });
+  }) : super(key: key);
 
   @override
   State<MdiWindowTitleBar> createState() => _MdiWindowTitleBarState();
@@ -46,7 +46,11 @@ class _MdiWindowTitleBarState extends State<MdiWindowTitleBar> {
             }
           : null,
       onPanDown: (_) {
-        // Activate window on drag start
+        // Ensure window is activated BEFORE any drag operation
+        widget.controller.activateWindow(window.id);
+      },
+      onTap: () {
+        // Also handle tap to ensure focus
         widget.controller.activateWindow(window.id);
       },
       child: Container(

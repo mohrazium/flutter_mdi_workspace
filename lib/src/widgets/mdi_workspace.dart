@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../flutter_mdi_workspace.dart';
 import '../controller/mdi_workspace_controller.dart';
 import '../models/window_instance.dart';
+import '../models/window_visual_state.dart';
 import '../registry/workspace_registry.dart';
 import '../theme/mdi_workspace_theme.dart';
 
@@ -74,19 +75,50 @@ class _MdiWorkspaceState extends State<MdiWorkspace> {
     final visibleWindows = _controller.getVisibleWindows();
     visibleWindows.sort((a, b) => a.zIndex.compareTo(b.zIndex));
 
-    return Container(
-      color: widget.theme.workspaceBackgroundColor,
-      child: Stack(
-        children: [
-          // Render all visible windows
-          for (final window in visibleWindows)
-            _buildWindowPositioned(context, window),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Update workspace dimensions in controller
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _controller.setWorkspaceDimensions(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          );
+        });
+
+        return Container(
+          color: widget.theme.workspaceBackgroundColor,
+          child: Stack(
+            children: [
+              // Render all visible windows
+              for (final window in visibleWindows)
+                _buildWindowPositioned(context, window),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildWindowPositioned(BuildContext context, WindowInstance window) {
+    // For maximized windows, fill the entire workspace
+    if (window.visualState == WindowVisualState.maximized) {
+      return Positioned(
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        child: MdiWindow(
+          window: window,
+          controller: _controller,
+          theme: widget.theme,
+          registry: widget.registry,
+          onClosed: widget.onWindowClosed,
+          onActivated: widget.onWindowActivated,
+        ),
+      );
+    }
+
+    // For normal windows, use the stored position/size
     return Positioned(
       left: window.x,
       top: window.y,
