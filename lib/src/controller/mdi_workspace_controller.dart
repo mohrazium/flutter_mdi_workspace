@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import '../models/window_instance.dart';
 import '../models/window_visual_state.dart';

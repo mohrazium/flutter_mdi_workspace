@@ -22,12 +22,12 @@ class MdiWindowTitleBar extends StatefulWidget {
   final VoidCallback onClosed;
 
   const MdiWindowTitleBar({
-    Key? key,
+    super.key,
     required this.window,
     required this.controller,
     required this.theme,
     required this.onClosed,
-  }) : super(key: key);
+  });
 
   @override
   State<MdiWindowTitleBar> createState() => _MdiWindowTitleBarState();

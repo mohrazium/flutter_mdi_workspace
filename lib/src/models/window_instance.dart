@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'workspace_target.dart';
 import 'window_visual_state.dart';
 

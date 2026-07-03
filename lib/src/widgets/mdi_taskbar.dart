@@ -19,12 +19,12 @@ class MdiTaskbar extends StatefulWidget {
   /// Optional height override.
   final double? height;
 
-  const MdiTaskbar({
-    Key? key,
+  MdiTaskbar({
+    super.key,
     required this.controller,
-    this.theme = const MdiWorkspaceTheme(),
+    MdiWorkspaceTheme? theme,
     this.height,
-  }) : super(key: key);
+  })  : theme = theme ?? MdiWorkspaceTheme();
 
   @override
   State<MdiTaskbar> createState() => _MdiTaskbarState();
@@ -137,7 +137,8 @@ class _MdiTaskbarState extends State<MdiTaskbar> {
                     isMinimized ? '[${window.getTitle()}]' : window.getTitle(),
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isActive ? FontWeight.bold : FontWeight.normal,
                       color: isActive ? Colors.white : Colors.black,
                     ),
                     overflow: TextOverflow.ellipsis,

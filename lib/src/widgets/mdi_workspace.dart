@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../flutter_mdi_workspace.dart';
 import '../controller/mdi_workspace_controller.dart';
 import '../models/window_instance.dart';
-import '../models/window_visual_state.dart';
 import '../registry/workspace_registry.dart';
 import '../theme/mdi_workspace_theme.dart';
 
@@ -25,14 +25,14 @@ class MdiWorkspace extends StatefulWidget {
   /// Optional callback when a window is activated.
   final void Function(String windowId)? onWindowActivated;
 
-  const MdiWorkspace({
-    Key? key,
+  MdiWorkspace({
+    super.key,
     required this.controller,
     required this.registry,
-    this.theme = const MdiWorkspaceTheme(),
+    MdiWorkspaceTheme? theme,
     this.onWindowClosed,
     this.onWindowActivated,
-  }) : super(key: key);
+  })  : theme = theme ?? MdiWorkspaceTheme();
 
   @override
   State<MdiWorkspace> createState() => _MdiWorkspaceState();

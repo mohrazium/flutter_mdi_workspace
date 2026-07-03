@@ -91,16 +91,16 @@ class MdiWorkspaceTheme {
 
   /// Create a dark theme.
   factory MdiWorkspaceTheme.dark() => MdiWorkspaceTheme(
-        workspaceBackgroundColor = const Color(0xFF1E1E1E),
-        windowBorderColor = const Color(0xFF3F3F3F),
-        titleBarBackgroundColor = const Color(0xFF2D2D30),
-        titleBarTextColor = const Color(0xFFCCCCCC),
-        titleBarActiveBackgroundColor = const Color(0xFF0078D4),
-        titleBarIconColor = const Color(0xFFCCCCCC),
-        titleBarIconHoverColor = const Color(0xFFFFFFFF),
-        resizeHandleColor = const Color(0xFF3F3F3F),
-        taskbarBackgroundColor = const Color(0xFF2D2D30),
-        taskbarBorderColor = const Color(0xFF3F3F3F),
+        workspaceBackgroundColor: const Color(0xFF1E1E1E),
+        windowBorderColor : const Color(0xFF3F3F3F),
+        titleBarBackgroundColor : const Color(0xFF2D2D30),
+        titleBarTextColor : const Color(0xFFCCCCCC),
+        titleBarActiveBackgroundColor : const Color(0xFF0078D4),
+        titleBarIconColor : const Color(0xFFCCCCCC),
+        titleBarIconHoverColor : const Color(0xFFFFFFFF),
+        resizeHandleColor : const Color(0xFF3F3F3F),
+        taskbarBackgroundColor : const Color(0xFF2D2D30),
+        taskbarBorderColor : const Color(0xFF3F3F3F),
       );
 
   /// Create a copy with optional field overrides.
